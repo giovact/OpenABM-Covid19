@@ -17,8 +17,12 @@
 #include "structure.h"
 #include "interventions.h"
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <math.h>
+
+// ALE: DEBUG
+FILE *estimates_file;
 
 /*****************************************************************************************
 *  Name:		set_up_transition_times
@@ -65,28 +69,47 @@ double estimate_mean_interactions_by_age( model *model, int age )
 	double inter  = 0;
 	double *weight = model->params->relative_transmission;
 
+	// ALE: DEBUG
+	double inter_random, inter_work, inter_house;
+
 	for( pdx = 0; pdx < model->params->n_total; pdx++ )
 		if( model->population[pdx].age_type == age )
 		{
 			people++;
 			inter += model->population[pdx].base_random_interactions * weight[RANDOM];
 		}
+	inter_random = inter;
+
+	inter_house = 0;
 	for( pdx = 0; pdx < model->household_network->n_edges; pdx++ )
 	{
-		if( model->population[model->household_network->edges[pdx].id1].age_type == age )
+		if( model->population[model->household_network->edges[pdx].id1].age_type == age ) {
 			inter += weight[HOUSEHOLD];
-		if( model->population[model->household_network->edges[pdx].id2].age_type == age )
+			inter_house += weight[HOUSEHOLD];
+		}
+		if( model->population[model->household_network->edges[pdx].id2].age_type == age ) {
 			inter += weight[HOUSEHOLD];
+			inter_house += weight[HOUSEHOLD];
+		}
 	}
 
+	inter_occupation = 0;
 	for( ndx = 0; ndx < N_OCCUPATION_NETWORKS ; ndx++ )
 		for( pdx = 0; pdx < model->occupation_network[ndx]->n_edges; pdx++ )
 		{
-			if( model->population[model->occupation_network[ndx]->edges[pdx].id1].age_type == age )
+			if( model->population[model->occupation_network[ndx]->edges[pdx].id1].age_type == age ) {
 				inter += model->params->daily_fraction_work * weight[OCCUPATION];
-			if( model->population[model->occupation_network[ndx]->edges[pdx].id2].age_type == age )
-				inter  += model->params->daily_fraction_work * weight[OCCUPATION];
+				inter_work += model->params->daily_fraction_work * weight[OCCUPATION];
+			}
+			if( model->population[model->occupation_network[ndx]->edges[pdx].id2].age_type == age ) {
+				inter_work += model->params->daily_fraction_work * weight[OCCUPATION];
+				inter += model->params->daily_fraction_work * weight[OCCUPATION];
+			}
 		}
+
+	fprintf(estimates_file, "%d,%g,%g,%g,%g\n", age, inter_random/people, inter_house/people, inter_occupation/people, inter/people);
+
+	// END ALE: DEBUG
 
 	return 1.0 * inter / people;
 }
@@ -112,9 +135,19 @@ void set_up_infectious_curves( model *model )
 	double mean_interactions[N_AGE_TYPES];
 	int type, group;
 
+	// ALE: DEBUG
+	char estimates_file_name[INPUT_CHAR_LEN];
+	strcpy(estimates_file_name, model->params->output_file_dir);
+	strcat(estimates_file_name, "/connectivity_estimates.csv");
+	estimates_file = fopen(estimates_file_name, "w");
+	fprintf(estimates_file, "age_type,random,house,work,all\n");
+	
 	mean_interactions[AGE_TYPE_CHILD]   = estimate_mean_interactions_by_age( model, AGE_TYPE_CHILD );
 	mean_interactions[AGE_TYPE_ADULT]   = estimate_mean_interactions_by_age( model, AGE_TYPE_ADULT );
 	mean_interactions[AGE_TYPE_ELDERLY] = estimate_mean_interactions_by_age( model, AGE_TYPE_ELDERLY );
+
+	fclose(estimates_file);
+	// END ALE: DEBUG
 
 	infectious_rate   = params->infectious_rate / mean_interactions[AGE_TYPE_ADULT];
 
