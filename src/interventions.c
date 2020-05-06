@@ -217,6 +217,7 @@ void intervention_quarantine_until(
 	int contact_time
 )
 {
+	fprintf(stderr, "HERE\n");
 	if( indiv->traced_on_this_trace )
 		return;
 
