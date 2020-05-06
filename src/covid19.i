@@ -19,3 +19,4 @@
 %include "input.h"
 %include model_utils.i 
 %include params_utils.i
+%include interventions_utils.i

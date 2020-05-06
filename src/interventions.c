@@ -357,6 +357,9 @@ int intervention_quarantine_until(
 {
 	if( is_in_hospital( indiv ) )
 		return FALSE;
+	fprintf(stderr, "HERE\n");
+	if( indiv->traced_on_this_trace )
+		return;
 
 	if( indiv->traced_on_this_trace >= 1 || risk_score == 0 )
 		return FALSE;
