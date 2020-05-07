@@ -357,7 +357,7 @@ int intervention_quarantine_until(
 {
 	if( is_in_hospital( indiv ) )
 		return FALSE;
-	fprintf(stderr, "HERE\n");
+	// fprintf(stderr, "HERE\n");
 	if( indiv->traced_on_this_trace )
 		return;
 
@@ -395,6 +395,8 @@ int intervention_quarantine_until(
 	{
 		indiv->quarantine_event = add_individual_to_event_list( model, QUARANTINED, indiv, model->time );
 		set_quarantine_status( indiv, model->params, model->time, TRUE );
+		// ALE
+		//fprintf(stderr, "...quarantining the guy\n");
 	}
 
 	if( indiv->quarantine_release_event != NULL )
