@@ -359,7 +359,7 @@ int intervention_quarantine_until(
 		return FALSE;
 	// fprintf(stderr, "HERE\n");
 	if( indiv->traced_on_this_trace )
-		return;
+		return FALSE;
 
 	if( indiv->traced_on_this_trace >= 1 || risk_score == 0 )
 		return FALSE;
@@ -591,7 +591,7 @@ void intervention_trace_token_release( model *model, individual *indiv )
 		contact    = token->individual;
 		remove_one_trace_token( model, token );
 
-		if( contact->trace_tokens == NULL & contact->index_trace_token == NULL )
+		if( contact->trace_tokens == NULL && contact->index_trace_token == NULL )
 			intervention_quarantine_release( model, contact );
 	}
 }
@@ -656,7 +656,7 @@ void intervention_quarantine_household_of_traced(
 		contact->traced_on_this_trace = TRUE;
 		token->index_status = index_token->index_status;
 
-		if( contact->house_no != house_no & contact->quarantine_release_event != NULL )
+		if( contact->house_no != house_no && contact->quarantine_release_event != NULL )
 		{
 			time_quarantine = contact->quarantine_release_event->time;
 			intervention_quarantine_household( model, contact, time_quarantine, FALSE, index_token, FALSE );

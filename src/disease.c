@@ -93,7 +93,7 @@ double estimate_mean_interactions_by_age( model *model, int age )
 		}
 	}
 
-	inter_occupation = 0;
+	inter_work = 0;
 	for( ndx = 0; ndx < N_OCCUPATION_NETWORKS ; ndx++ )
 		for( pdx = 0; pdx < model->occupation_network[ndx]->n_edges; pdx++ )
 		{
@@ -107,7 +107,7 @@ double estimate_mean_interactions_by_age( model *model, int age )
 			}
 		}
 
-	fprintf(estimates_file, "%d,%g,%g,%g,%g\n", age, inter_random/people, inter_house/people, inter_occupation/people, inter/people);
+	fprintf(estimates_file, "%d,%g,%g,%g,%g\n", age, inter_random/people, inter_house/people, inter_work/people, inter/people);
 
 	// END ALE: DEBUG
 

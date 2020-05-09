@@ -633,7 +633,7 @@ void write_interactions( model *model )
 	//day = model->interaction_day_idx;
 	//ring_dec( day, model->params->days_of_interactions );
 
-	fprintf(output_file ,"time,ID,age_group,house_no,work_network,type,ID_2,age_group_2,house_no_2,work_2\n");
+	fprintf(output_file ,"time,ID,age_group,house_no,occupation_network,type,ID_2,age_group_2,house_no_2,work_2\n");
 	printf("total_time: %d\n", model->params->end_time);
 	for (day = 0; day < model->params->end_time; day++) {
 		//printf("day: %d\n",day);
@@ -652,12 +652,12 @@ void write_interactions( model *model )
 							indiv->idx,
 							indiv->age_group,
 							indiv->house_no,
-							indiv->work_network,
+							indiv->occupation_network,
 							inter->type,
 							inter->individual->idx,
 							inter->individual->age_group,
 							inter->individual->house_no,
-							inter->individual->work_network
+							inter->individual->occupation_network
 					       );
 					inter = inter->next;
 				}
